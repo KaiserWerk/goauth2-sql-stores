@@ -12,6 +12,24 @@ type TokenStorage struct {
 	conn *sql.DB
 }
 
+func NewTokenStorage(dsn string) (*TokenStorage, error) {
+	var (
+		err error
+		cs  = &TokenStorage{}
+	)
+	cs.conn, err = sql.Open("sqlite", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = cs.conn.Exec(tokenCreateTableQuery)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create token table: %w", err)
+	}
+
+	return cs, nil
+}
+
 func (s *TokenStorage) FindByCodeChallenge(cc string) (storage.OAuth2Token, error) {
 	t := storage.Token{}
 	rows, err := s.conn.Query(tokenSelectByCodeChallengeQuery, cc)

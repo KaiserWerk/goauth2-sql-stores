@@ -26,7 +26,7 @@ func NewClientStorage(dsn string) (*ClientStorage, error) {
 		return nil, err
 	}
 
-	_, err = cs.conn.Query(clientCreateTableQuery)
+	_, err = cs.conn.Exec(clientCreateTableQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client table: %w", err)
 	}

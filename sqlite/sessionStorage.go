@@ -18,18 +18,15 @@ func NewSessionStorage(dsn string) (*SessionStorage, error) {
 		err error
 		cs  = &SessionStorage{}
 	)
-	cs.conn, err = sql.Open("sqlite3", dsn)
+	cs.conn, err = sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = cs.conn.Query(clientCreateTableQuery)
+	_, err = cs.conn.Exec(clientCreateTableQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client table: %w", err)
 	}
-
-	cs.conn.SetMaxIdleConns(3)
-	cs.conn.SetMaxOpenConns(5)
 
 	return cs, nil
 }

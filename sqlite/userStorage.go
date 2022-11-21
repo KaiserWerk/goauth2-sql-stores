@@ -12,6 +12,24 @@ type UserStorage struct {
 	conn *sql.DB
 }
 
+func NewUserStorage(dsn string) (*UserStorage, error) {
+	var (
+		err error
+		cs  = &UserStorage{}
+	)
+	cs.conn, err = sql.Open("sqlite", dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = cs.conn.Exec(userCreateTableQuery)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user table: %w", err)
+	}
+
+	return cs, nil
+}
+
 func (s *UserStorage) Get(id uint) (storage.OAuth2User, error) {
 	u := storage.User{}
 
