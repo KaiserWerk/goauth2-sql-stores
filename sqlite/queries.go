@@ -44,7 +44,7 @@ const (
 	tokenInsertQuery                = `INSERT INTO token (client_id, access_token, token_type, expires_in, refresh_token, scope, state, code_challenge, authorization_code) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	tokenDeleteQuery                = `DELETE FROM token WHERE access_token = ?`
 
-	userCreateTableQuery = `CREATE TABLE "user" (
+	userCreateTableQuery = `CREATE TABLE IF NOT EXISTS "user" (
 		"id"	INTEGER NOT NULL,
 		"username"	TEXT NOT NULL UNIQUE,
 		"email"	TEXT NOT NULL,
