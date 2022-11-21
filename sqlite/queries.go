@@ -44,13 +44,14 @@ const (
 	tokenInsertQuery                = `INSERT INTO token (client_id, access_token, token_type, expires_in, refresh_token, scope, state, code_challenge, authorization_code) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	tokenDeleteQuery                = `DELETE FROM token WHERE access_token = ?`
 
-	userCreateTableQuery = `CREATE TABLE IF NOT EXISTS user (
-	  id int(10) UNSIGNED NOT NULL,
-	  username int(255) NOT NULL,
-	  email int(255) NOT NULL,
-	  password varchar(255) NOT NULL,
-	  disabled tinyint(1) NOT NULL DEFAULT '0'
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+	userCreateTableQuery = `CREATE TABLE "user" (
+		"id"	INTEGER NOT NULL,
+		"username"	TEXT NOT NULL UNIQUE,
+		"email"	TEXT NOT NULL,
+		"password"	TEXT NOT NULL,
+		"disabled"	NUMERIC NOT NULL,
+		PRIMARY KEY("id" AUTOINCREMENT)
+	);`
 	userSelectQuery           = `SELECT id, username, email, password, disabled FROM user WHERE id = ?`
 	userSelectByUsernameQuery = `SELECT id, username, email, password, disabled FROM user WHERE username = ?`
 	userInsertQuery           = `INSERT INTO user (username, email, password, disabled) VALUES(?, ?, ?, ?)`
