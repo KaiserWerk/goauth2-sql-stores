@@ -23,7 +23,7 @@ func NewSessionStorage(dsn string) (*SessionStorage, error) {
 		return nil, err
 	}
 
-	_, err = cs.conn.Exec(clientCreateTableQuery)
+	_, err = cs.conn.Exec(sessionCreateTableQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client table: %w", err)
 	}
@@ -33,7 +33,7 @@ func NewSessionStorage(dsn string) (*SessionStorage, error) {
 
 func (s *SessionStorage) Get(id string) (storage.OAuth2Session, error) {
 	sess := storage.Session{}
-	rows, err := s.conn.Query(clientSelectQuery, id)
+	rows, err := s.conn.Query(sessionSelectQuery, id)
 	if err != nil {
 		return nil, err
 	}
