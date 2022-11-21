@@ -37,7 +37,7 @@ func (s *SessionStorage) Get(id string) (storage.OAuth2Session, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, fmt.Errorf("no entry found")
 	}

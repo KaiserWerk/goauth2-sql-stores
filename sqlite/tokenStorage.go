@@ -36,7 +36,7 @@ func (s *TokenStorage) FindByCodeChallenge(cc string) (storage.OAuth2Token, erro
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, fmt.Errorf("no entry found")
 	}
@@ -57,7 +57,7 @@ func (s *TokenStorage) FindByAccessToken(at string) (storage.OAuth2Token, error)
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, fmt.Errorf("no entry found")
 	}

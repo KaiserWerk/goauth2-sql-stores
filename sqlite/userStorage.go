@@ -32,12 +32,11 @@ func NewUserStorage(dsn string) (*UserStorage, error) {
 
 func (s *UserStorage) Get(id uint) (storage.OAuth2User, error) {
 	u := storage.User{}
-
 	rows, err := s.conn.Query(userSelectQuery, id)
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, fmt.Errorf("no entry found")
 	}
@@ -56,7 +55,7 @@ func (s *UserStorage) GetByUsername(username string) (storage.OAuth2User, error)
 	if err != nil {
 		return nil, err
 	}
-
+	defer rows.Close()
 	if !rows.Next() {
 		return nil, fmt.Errorf("no entry found")
 	}
