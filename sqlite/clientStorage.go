@@ -6,26 +6,27 @@ import (
 	"strings"
 
 	"github.com/KaiserWerk/goauth2/storage"
+	_ "modernc.org/sqlite"
 )
 
 const urlSeparator = `|`
 
-type SQLiteClientStorage struct {
+type ClientStorage struct {
 	conn *sql.DB
 }
 
-// New returns a new instance of the SQLiteClientStorage using an SQLite3 DSN.
-func New(dsn string) (*SQLiteClientStorage, error) {
+// NewClientStorage returns a new instance of the ClientStorage using an SQLite3 DSN.
+func NewClientStorage(dsn string) (*ClientStorage, error) {
 	var (
 		err error
-		cs  = &SQLiteClientStorage{}
+		cs  = &ClientStorage{}
 	)
 	cs.conn, err = sql.Open("sqlite3", dsn)
 	if err != nil {
 		return nil, err
 	}
 
-	_, err = cs.conn.Query(createQuery)
+	_, err = cs.conn.Query(clientCreateTableQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client table: %w", err)
 	}
@@ -33,9 +34,9 @@ func New(dsn string) (*SQLiteClientStorage, error) {
 	return cs, nil
 }
 
-func (s *SQLiteClientStorage) Get(id string) (storage.OAuth2Client, error) {
+func (s *ClientStorage) Get(id string) (storage.OAuth2Client, error) {
 	c := storage.Client{}
-	rows, err := s.conn.Query(selectQuery, id)
+	rows, err := s.conn.Query(clientSelectQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +64,7 @@ func (s *SQLiteClientStorage) Get(id string) (storage.OAuth2Client, error) {
 	return c, nil
 }
 
-func (s *SQLiteClientStorage) Add(client storage.OAuth2Client) error {
+func (s *ClientStorage) Add(client storage.OAuth2Client) error {
 	// check if client exists?
 	var (
 		confi int
@@ -78,11 +79,11 @@ func (s *SQLiteClientStorage) Add(client storage.OAuth2Client) error {
 
 	urls = strings.Join(client.GetRedirectURLs(), urlSeparator)
 
-	_, err := s.conn.Query(insertQuery, client.GetID(), client.GetSecret(), confi, client.GetApplicationName(), urls)
+	_, err := s.conn.Exec(clientInsertQuery, client.GetID(), client.GetSecret(), confi, client.GetApplicationName(), urls)
 	return err
 }
 
-func (s *SQLiteClientStorage) Edit(client storage.OAuth2Client) error {
+func (s *ClientStorage) Edit(client storage.OAuth2Client) error {
 	var (
 		confi int
 		urls  string
@@ -96,15 +97,15 @@ func (s *SQLiteClientStorage) Edit(client storage.OAuth2Client) error {
 
 	urls = strings.Join(client.GetRedirectURLs(), urlSeparator)
 
-	_, err := s.conn.Query(updateQuery, client.GetSecret(), confi, client.GetApplicationName(), urls, client.GetID())
+	_, err := s.conn.Exec(clientUpdateQuery, client.GetSecret(), confi, client.GetApplicationName(), urls, client.GetID())
 	return err
 }
 
-func (s *SQLiteClientStorage) Remove(client storage.OAuth2Client) error {
-	_, err := s.conn.Query(deleteQuery, client.GetID())
+func (s *ClientStorage) Remove(client storage.OAuth2Client) error {
+	_, err := s.conn.Exec(clientDeleteQuery, client.GetID())
 	return err
 }
 
-func (s *SQLiteClientStorage) Close() error {
+func (s *ClientStorage) Close() error {
 	return s.conn.Close()
 }
