@@ -21,7 +21,7 @@ func NewClientStorage(dsn string) (*ClientStorage, error) {
 		err error
 		cs  = &ClientStorage{}
 	)
-	cs.conn, err = sql.Open("sqlite3", dsn)
+	cs.conn, err = sql.Open("sqlite", dsn)
 	if err != nil {
 		return nil, err
 	}
