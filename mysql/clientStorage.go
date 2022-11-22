@@ -26,7 +26,7 @@ func NewClientStorage(dsn string) (*ClientStorage, error) {
 	cs.conn.SetMaxOpenConns(10)
 	cs.conn.SetMaxIdleConns(10)
 
-	_, err = cs.conn.Query(createTableQuery)
+	_, err = cs.conn.Query(clientCreateTableQuery)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create client table: %w", err)
 	}
@@ -36,7 +36,7 @@ func NewClientStorage(dsn string) (*ClientStorage, error) {
 
 func (s *ClientStorage) Get(id string) (storage.OAuth2Client, error) {
 	c := storage.Client{}
-	rows, err := s.conn.Query(selectQuery, id)
+	rows, err := s.conn.Query(clientSelectQuery, id)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (s *ClientStorage) Add(client storage.OAuth2Client) error {
 
 	urls = strings.Join(client.GetRedirectURLs(), urlSeparator)
 
-	_, err := s.conn.Exec(insertQuery, client.GetID(), client.GetSecret(), confi, client.GetApplicationName(), urls)
+	_, err := s.conn.Exec(clientInsertQuery, client.GetID(), client.GetSecret(), confi, client.GetApplicationName(), urls)
 	return err
 }
 
@@ -97,12 +97,12 @@ func (s *ClientStorage) Edit(client storage.OAuth2Client) error {
 
 	urls = strings.Join(client.GetRedirectURLs(), urlSeparator)
 
-	_, err := s.conn.Exec(updateQuery, client.GetSecret(), confi, client.GetApplicationName(), urls, client.GetID())
+	_, err := s.conn.Exec(clientUpdateQuery, client.GetSecret(), confi, client.GetApplicationName(), urls, client.GetID())
 	return err
 }
 
 func (s *ClientStorage) Remove(client storage.OAuth2Client) error {
-	_, err := s.conn.Exec(deleteQuery, client.GetID())
+	_, err := s.conn.Exec(clientDeleteQuery, client.GetID())
 	return err
 }
 
